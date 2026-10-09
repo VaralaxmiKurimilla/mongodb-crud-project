@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Management System</title>
+</head>
+<body>
+
+<h1>Student Management System</h1>
+
+<h2>Add Student</h2>
+
+<form method="POST" action="/students">
+    <label>ID:</label>
+    <input type="number" name="id" required><br><br>
+
+    <label>Name:</label>
+    <input type="text" name="name" required><br><br>
+
+    <label>Age:</label>
+    <input type="number" name="age" required><br><br>
+
+    <button type="submit">Add Student</button>
+</form>
+
+<hr>
+
+<h2>Student Details</h2>
+
+<button onclick="loadStudents()">Show Students</button>
+
+<table border="1" cellpadding="8" id="studentTable">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Age</th>
+            <th>Edit</th>
+            <th>Delete</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+<hr>
+
+<h2>Edit Student</h2>
+
+<form id="updateForm" method="POST" action="/update-student">    <label>ID:</label>
+    <input type="number" name="id" required><br><br>
+
+    <label>New Name:</label>
+    <input type="text" name="name" required><br><br>
+
+    <label>New Age:</label>
+    <input type="number" name="age" required><br><br>
+
+    <button type="submit">Update Student</button>
+</form>
+
+<script>
+async function loadStudents() {
+    const response = await fetch("/students");
+    const students = await response.json();
+
+    const tbody = document.querySelector("#studentTable tbody");
+    tbody.innerHTML = "";
+
+    students.forEach(student => {
+        const row = document.createElement("tr");
+
+        row.innerHTML = `
+            <td>${student.id}</td>
+            <td>${student.name}</td>
+            <td>${student.age}</td>
+            <td>
+                <button onclick="editStudent(${student.id}, '${student.name}', ${student.age})">
+                    Edit
+                </button>
+            </td>
+            <td>
+                <form method="POST" action="/delete-student" style="display:inline;">
+                    <input type="hidden" name="id" value="${student.id}">
+                    <button type="submit">Delete</button>
+                </form>
+            </td>
+        `;
+
+        tbody.appendChild(row);
+    });
+}
+
+function editStudent(id, name, age) {
+    const form = document.getElementById("updateForm");
+
+    form.querySelector('input[name="id"]').value = id;
+    form.querySelector('input[name="name"]').value = name;
+    form.querySelector('input[name="age"]').value = age;
+
+    form.scrollIntoView();
+}
+</script>
+
+</body>
+</html>
